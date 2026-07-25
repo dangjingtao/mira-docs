@@ -1,0 +1,37 @@
+name: Publish npm package
+
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify release package
+        run: npm run release:check
+
+      - name: Match release tag and package version
+        run: |
+          VERSION=$(node -p "require('./packages/mira-docs/package.json').version")
+          test "${GITHUB_REF_NAME}" = "v${VERSION}"
+
+      - name: Publish @uichat-mira/docs
+        working-directory: packages/mira-docs
+        run: npm publish --access public
