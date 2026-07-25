@@ -1,30 +1,46 @@
 {
-  "name": "@mira/docs",
+  "name": "@uichat-mira/docs",
   "version": "0.1.0",
   "description": "Git-native documentation, publishing, and project portal runtime",
+  "keywords": [
+    "documentation",
+    "markdown",
+    "vite",
+    "react",
+    "github-pages",
+    "static-site-generator",
+    "cms"
+  ],
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "sideEffects": [
     "./dist/styles.css"
   ],
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./vite": {
       "types": "./dist/vite.d.ts",
-      "import": "./dist/vite.js"
+      "import": "./dist/vite.js",
+      "default": "./dist/vite.js"
     },
     "./styles.css": "./dist/styles.css"
   },
   "scripts": {
     "build": "tsup src/index.ts src/vite.ts --format esm --dts --clean && node scripts/copy-styles.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "prepack": "npm run build",
+    "pack:verify": "node scripts/verify-package.mjs"
   },
   "dependencies": {
     "marked": "^15.0.12",
@@ -46,6 +62,22 @@
     "tsup": "^8.5.0",
     "typescript": "^5.9.3",
     "vite": "^7.2.2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dangjingtao/mira-docs.git",
+    "directory": "packages/mira-docs"
+  },
+  "homepage": "https://dangjingtao.github.io/mira-docs/",
+  "bugs": {
+    "url": "https://github.com/dangjingtao/mira-docs/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "license": "MIT"
 }

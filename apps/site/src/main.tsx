@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { MiraDocsApp, type MiraDoc } from "@mira/docs";
-import "@mira/docs/styles.css";
+import { MiraDocsApp, type MiraDoc } from "@uichat-mira/docs";
+import "@uichat-mira/docs/styles.css";
 import docs from "virtual:mira-docs/content";
 import config from "../mira-docs.config";
 

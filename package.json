@@ -8,11 +8,12 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "npm run build -w @mira/docs && npm run build -w @mira/docs-site",
-    "dev": "npm run build -w @mira/docs && npm run dev -w @mira/docs-site",
-    "typecheck": "npm run typecheck -w @mira/docs && npm run build -w @mira/docs && npm run typecheck -w @mira/docs-site",
-    "validate": "npm run typecheck && npm run test -w @mira/docs && npm run build -w @mira/docs-site",
-    "test": "npm run build -w @mira/docs && npm run test -w @mira/docs"
+    "build": "npm run build -w @uichat-mira/docs && npm run build -w @uichat-mira/docs-site",
+    "dev": "npm run build -w @uichat-mira/docs && npm run dev -w @uichat-mira/docs-site",
+    "typecheck": "npm run typecheck -w @uichat-mira/docs && npm run build -w @uichat-mira/docs && npm run typecheck -w @uichat-mira/docs-site",
+    "validate": "npm run typecheck && npm run test -w @uichat-mira/docs && npm run build -w @uichat-mira/docs-site",
+    "test": "npm run build -w @uichat-mira/docs && npm run test -w @uichat-mira/docs",
+    "release:check": "npm run validate && npm run pack:verify -w @uichat-mira/docs"
   },
   "engines": {
     "node": ">=20"

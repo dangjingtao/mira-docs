@@ -10,4 +10,4 @@ The runtime must not contain product-specific author identities or workflow rule
 
 ## Dogfood rule
 
-The official site in this repository uses `@mira/docs`. The existing UIChat Mira documentation site will later consume the same package as the first production migration target.
+The official site in this repository uses `@uichat-mira/docs`. The existing UIChat Mira documentation site consumes the same package contract as the first production migration target.

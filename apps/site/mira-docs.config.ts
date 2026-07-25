@@ -1,4 +1,4 @@
-import { defineMiraDocsConfig } from "@mira/docs";
+import { defineMiraDocsConfig } from "@uichat-mira/docs";
 
 export default defineMiraDocsConfig({
   title: "MiraDocs",

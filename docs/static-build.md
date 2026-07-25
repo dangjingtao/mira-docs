@@ -1,18 +1,17 @@
 # Static build contract
 
-MiraDocs owns static file generation while each site keeps control of its brand,
-page markup, authorship rules, and structured-data content.
+MiraDocs owns static file generation while each site keeps control of its brand, page markup, authorship rules, and structured-data content.
 
 ```ts
-import { miraDocs } from "@mira/docs/vite";
+import { miraDocs } from "@uichat-mira/docs/vite";
 import type {
   MiraDocsStaticBuildOptions,
   MiraDocsStaticRoute,
-} from "@mira/docs/vite";
+} from "@uichat-mira/docs/vite";
 
 const staticBuild: MiraDocsStaticBuildOptions = {
-  routes: ({ docs, base, config }) => {
-    const routes: MiraDocsStaticRoute[] = docs.map((doc) => ({
+  routes: ({ docs }) =>
+    docs.map((doc) => ({
       path: doc.path,
       title: doc.title,
       description: doc.description,
@@ -20,9 +19,7 @@ const staticBuild: MiraDocsStaticBuildOptions = {
       type: doc.type === "article" ? "article" : "website",
       image: doc.cover,
       doc,
-    }));
-    return routes;
-  },
+    })),
   notFound: () => ({
     path: "/404",
     title: "Page not found",
@@ -65,7 +62,4 @@ export default {
 - Map site-specific authors, merged documents, and content categories.
 - Supply brand-specific images, locale, title rules, and JSON-LD.
 
-The UIChat Mira documentation site is the first production consumer of this
-contract. Its migration verifies frozen dependency installation, 86 real content
-routes, GitHub Pages base paths, canonical URLs, JSON-LD, 404 indexing rules,
-sitemap coverage, and `robots.txt` output.
+The UIChat Mira documentation site is the first production consumer of this contract. Its migration verifies frozen dependency installation, real content routes, GitHub Pages base paths, canonical URLs, JSON-LD, 404 indexing rules, sitemap coverage, and `robots.txt` output.
