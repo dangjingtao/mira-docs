@@ -1,0 +1,20 @@
+{
+  "name": "mira-docs-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @mira/docs && npm run build -w @mira/docs-site",
+    "dev": "npm run build -w @mira/docs && npm run dev -w @mira/docs-site",
+    "typecheck": "npm run typecheck -w @mira/docs && npm run build -w @mira/docs && npm run typecheck -w @mira/docs-site",
+    "validate": "npm run typecheck && npm run test -w @mira/docs && npm run build -w @mira/docs-site",
+    "test": "npm run build -w @mira/docs && npm run test -w @mira/docs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

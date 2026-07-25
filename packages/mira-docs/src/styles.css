@@ -1,0 +1,231 @@
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #2d2926;
+  background: #f7f5f1;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; background: #f7f5f1; }
+a { color: inherit; text-decoration: none; }
+
+.mira-shell { min-height: 100vh; }
+
+.mira-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 0 28px;
+  border-bottom: 1px solid #ded9d1;
+  background: rgba(247, 245, 241, 0.94);
+  backdrop-filter: blur(14px);
+}
+
+.mira-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+}
+
+.mira-brand img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.mira-header nav {
+  display: flex;
+  gap: 20px;
+  font-size: 14px;
+}
+
+.mira-header-actions { margin-left: auto; }
+
+.mira-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+}
+
+.mira-sidebar {
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
+  overflow: auto;
+  padding: 28px 22px;
+  border-right: 1px solid #ded9d1;
+}
+
+.mira-sidebar section + section { margin-top: 28px; }
+
+.mira-sidebar h2 {
+  margin: 0 0 10px;
+  color: #8a7463;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mira-sidebar a {
+  display: block;
+  padding: 7px 10px;
+  border-radius: 8px;
+  color: #625b55;
+  font-size: 14px;
+}
+
+.mira-sidebar a:hover,
+.mira-sidebar a.active {
+  background: #ece7df;
+  color: #2d2926;
+}
+
+.mira-content { min-width: 0; }
+
+.mira-doc-page,
+.mira-home {
+  width: min(900px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 76px 0 96px;
+}
+
+.mira-eyebrow {
+  margin-bottom: 12px;
+  color: #b55b3d;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.mira-doc-page > h1,
+.mira-hero h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(42px, 7vw, 72px);
+  line-height: 1.02;
+  font-weight: 500;
+}
+
+.mira-lede,
+.mira-hero p {
+  max-width: 720px;
+  color: #6b625a;
+  font-size: 19px;
+  line-height: 1.7;
+}
+
+.mira-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 52px;
+}
+
+.mira-card {
+  padding: 24px;
+  border: 1px solid #ddd7ce;
+  border-radius: 18px;
+  background: #fbfaf8;
+  box-shadow: 0 8px 24px rgba(65, 55, 48, 0.04);
+  transition: 160ms ease;
+}
+
+.mira-card:hover {
+  transform: translateY(-2px);
+  border-color: #c7bcae;
+}
+
+.mira-card span {
+  color: #b55b3d;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mira-card h2 {
+  margin: 12px 0 8px;
+  font-size: 20px;
+}
+
+.mira-card p {
+  margin: 0;
+  color: #756c64;
+  line-height: 1.6;
+}
+
+.mira-markdown {
+  margin-top: 48px;
+  color: #3d3834;
+  font-size: 17px;
+  line-height: 1.82;
+}
+
+.mira-markdown h2 {
+  margin-top: 52px;
+  font-family: Georgia, serif;
+  font-size: 32px;
+}
+
+.mira-markdown h3 {
+  margin-top: 34px;
+  font-size: 22px;
+}
+
+.mira-markdown pre {
+  overflow: auto;
+  padding: 18px;
+  border-radius: 14px;
+  background: #24211f;
+  color: #f5efe8;
+}
+
+.mira-markdown code {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.mira-markdown :not(pre) > code {
+  padding: 0.14em 0.34em;
+  border-radius: 5px;
+  background: #ebe6df;
+}
+
+.mira-markdown blockquote {
+  margin-left: 0;
+  padding-left: 20px;
+  border-left: 3px solid #c76a48;
+  color: #6b625a;
+}
+
+.mira-footer {
+  padding: 28px;
+  border-top: 1px solid #ded9d1;
+  color: #8a8179;
+  text-align: center;
+  font-size: 13px;
+}
+
+.mira-prerender {
+  width: min(900px, calc(100% - 48px));
+  margin: 80px auto;
+}
+
+@media (max-width: 780px) {
+  .mira-header { padding: 0 18px; }
+  .mira-header nav { display: none; }
+  .mira-layout { display: block; }
+  .mira-sidebar { display: none; }
+
+  .mira-doc-page,
+  .mira-home {
+    width: min(100% - 32px, 900px);
+    padding-top: 48px;
+  }
+
+  .mira-card-grid { grid-template-columns: 1fr; }
+}
