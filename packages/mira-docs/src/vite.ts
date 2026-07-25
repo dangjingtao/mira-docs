@@ -18,6 +18,13 @@ export type MiraDocsPluginOptions = {
   contentDir?: string;
   config: MiraDocsConfig;
   staticRoutes?: boolean;
+  exclude?: (sourcePath: string) => boolean;
+  route?: (sourcePath: string, doc: MiraDoc) => string;
+};
+
+type MiraDocsContentManifest = {
+  docs: MiraDoc[];
+  roots: string[];
 };
 
 function markdownFiles(directory: string): string[] {
@@ -30,15 +37,36 @@ function markdownFiles(directory: string): string[] {
   });
 }
 
-function readDocs(contentDir: string): MiraDoc[] {
-  return markdownFiles(contentDir)
-    .map((file) =>
-      parseMiraDoc(
-        relative(contentDir, file),
-        readFileSync(file, "utf8"),
-      ),
-    )
+function normalizeRoute(path: string): string {
+  const normalized = `/${path}`.replace(/\/{2,}/g, "/");
+  return normalized.length > 1 ? normalized.replace(/\/+$/, "") : normalized;
+}
+
+function readManifest(
+  contentDir: string,
+  options: MiraDocsPluginOptions,
+): MiraDocsContentManifest {
+  const docs = markdownFiles(contentDir)
+    .map((file) => {
+      const sourcePath = relative(contentDir, file).replace(/\\/g, "/");
+      if (options.exclude?.(sourcePath)) return undefined;
+
+      const doc = parseMiraDoc(sourcePath, readFileSync(file, "utf8"));
+      const path = options.route?.(sourcePath, doc) ?? doc.path;
+      return { ...doc, path: normalizeRoute(path) };
+    })
+    .filter((doc): doc is MiraDoc => Boolean(doc))
     .sort(compareMiraDocs);
+
+  const roots = [
+    ...new Set(
+      docs
+        .map((doc) => doc.sourcePath.split("/")[0])
+        .filter((root) => Boolean(root) && root.endsWith(".md") === false),
+    ),
+  ];
+
+  return { docs, roots };
 }
 
 function escapeHtml(value: string): string {
@@ -133,7 +161,12 @@ export function miraDocs(options: MiraDocsPluginOptions): Plugin {
 
     load(id) {
       if (id !== RESOLVED_VIRTUAL_ID) return;
-      return `export default ${JSON.stringify(readDocs(contentDir))};`;
+      const manifest = readManifest(contentDir, options);
+      return [
+        `const docs = ${JSON.stringify(manifest.docs)};`,
+        `export const roots = ${JSON.stringify(manifest.roots)};`,
+        "export default docs;",
+      ].join("\n");
     },
 
     handleHotUpdate({ file, server }) {
@@ -151,7 +184,7 @@ export function miraDocs(options: MiraDocsPluginOptions): Plugin {
       if (!existsSync(indexPath)) return;
 
       const template = readFileSync(indexPath, "utf8");
-      const docs = readDocs(contentDir);
+      const { docs } = readManifest(contentDir, options);
       const home = injectPage(template, undefined, options.config, base);
       writeFileSync(indexPath, home);
 
