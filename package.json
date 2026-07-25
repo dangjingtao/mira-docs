@@ -1,23 +1,37 @@
 {
-  "name": "@mira/docs",
+  "name": "@uichat-mira/docs",
   "version": "0.1.0-dev.20260725",
   "description": "Git-native documentation, publishing, and project portal runtime",
+  "keywords": [
+    "documentation",
+    "markdown",
+    "vite",
+    "react",
+    "github-pages",
+    "static-site-generator",
+    "cms"
+  ],
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "sideEffects": [
     "./dist/styles.css"
   ],
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./vite": {
       "types": "./dist/vite.d.ts",
-      "import": "./dist/vite.js"
+      "import": "./dist/vite.js",
+      "default": "./dist/vite.js"
     },
     "./styles.css": "./dist/styles.css"
   },
@@ -48,6 +62,15 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dangjingtao/mira-docs.git",
+    "directory": "packages/mira-docs"
+  },
+  "homepage": "https://dangjingtao.github.io/mira-docs/",
+  "bugs": {
+    "url": "https://github.com/dangjingtao/mira-docs/issues"
   },
   "license": "MIT"
 }

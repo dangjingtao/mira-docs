@@ -1,12 +1,11 @@
-# @mira/docs
+# @uichat-mira/docs
 
-The reusable MiraDocs runtime.
+Git-installable preview of the MiraDocs runtime.
+
+This branch exists only so production consumers can validate the package before its first npm release. The canonical source is `packages/mira-docs` on the MiraDocs feature branch.
 
 ## Exports
 
-- `@mira/docs` — content model, React runtime, and configuration helpers.
-- `@mira/docs/vite` — Vite plugin for Markdown discovery and static route output.
-- `@mira/docs/styles.css` — the default lightweight theme.
-
-This package is still pre-release. The public contract will remain narrow until
-the existing UIChat Mira documentation site has migrated successfully.
+- `@uichat-mira/docs`
+- `@uichat-mira/docs/vite`
+- `@uichat-mira/docs/styles.css`
