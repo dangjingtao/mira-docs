@@ -14,13 +14,52 @@ export function slugify(value: string): string {
     .replace(/^-|-$/g, "");
 }
 
+function parseLooseFrontmatter(source: string): Record<string, unknown> {
+  const data: Record<string, unknown> = {};
+  let currentKey = "";
+
+  for (const line of source.split(/\r?\n/)) {
+    if (!line.trim()) continue;
+
+    const listItem = line.match(/^\s*-\s+(.+)$/);
+    if (listItem && currentKey) {
+      const current = data[currentKey];
+      const next = listItem[1].trim();
+      data[currentKey] = Array.isArray(current)
+        ? [...current, next]
+        : current == null || current === ""
+          ? [next]
+          : [String(current), next];
+      continue;
+    }
+
+    const separator = line.indexOf(":");
+    if (separator < 0) continue;
+
+    const key = line.slice(0, separator).trim();
+    if (!key) continue;
+
+    currentKey = key;
+    data[key] = line.slice(separator + 1).trim();
+  }
+
+  return data;
+}
+
 export function parseFrontmatter(raw: string): {
   data: Record<string, unknown>;
   body: string;
 } {
   const match = raw.match(FRONTMATTER);
   if (!match) return { data: {}, body: raw };
-  const parsed = parseYaml(match[1]);
+
+  let parsed: unknown;
+  try {
+    parsed = parseYaml(match[1]);
+  } catch {
+    parsed = parseLooseFrontmatter(match[1]);
+  }
+
   return {
     data:
       parsed && typeof parsed === "object"
