@@ -17,3 +17,15 @@ jobs:
           cache: npm
       - run: npm ci --no-audit --no-fund
       - run: npm run release:check
+
+  windows-package-check:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build -w @uichat-mira/docs
+      - run: npm run pack:verify -w @uichat-mira/docs
