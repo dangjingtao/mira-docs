@@ -42,6 +42,17 @@ test("duplicate headings receive deterministic suffixes", () => {
   );
 });
 
+test("Markdown and HTML headings preserve source order", () => {
+  assert.deepEqual(
+    extractHeadings("## First\n\n<h2><strong>Second</strong></h2>\n\n### Third"),
+    [
+      { depth: 2, text: "First", id: "first" },
+      { depth: 2, text: "Second", id: "second" },
+      { depth: 3, text: "Third", id: "third" },
+    ],
+  );
+});
+
 test("plain markdown remains valid content", () => {
   assert.deepEqual(parseFrontmatter("# Hello"), {
     data: {},
