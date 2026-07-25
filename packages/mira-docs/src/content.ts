@@ -69,21 +69,49 @@ export function parseFrontmatter(raw: string): {
   };
 }
 
+type HeadingCandidate = {
+  index: number;
+  depth: number;
+  text: string;
+};
+
+function cleanHeadingText(value: string): string {
+  return value.replace(/<[^>]+>/g, "").replace(/[*_`]/g, "").trim();
+}
+
 export function extractHeadings(body: string): MiraHeading[] {
-  const seen = new Map<string, number>();
-  const headings: MiraHeading[] = [];
+  const candidates: HeadingCandidate[] = [];
+
   for (const match of body.matchAll(/^(#{2,4})\s+(.+)$/gm)) {
-    const text = match[2].replace(/[*_`]/g, "").trim();
-    const base = slugify(text) || "section";
-    const count = seen.get(base) ?? 0;
-    seen.set(base, count + 1);
-    headings.push({
+    candidates.push({
+      index: match.index ?? 0,
       depth: match[1].length,
-      text,
-      id: count === 0 ? base : `${base}-${count + 1}`,
+      text: cleanHeadingText(match[2]),
     });
   }
-  return headings;
+
+  for (const match of body.matchAll(/<h([2-4])\b[^>]*>([\s\S]*?)<\/h\1>/gi)) {
+    candidates.push({
+      index: match.index ?? 0,
+      depth: Number(match[1]),
+      text: cleanHeadingText(match[2]),
+    });
+  }
+
+  const seen = new Map<string, number>();
+  return candidates
+    .filter((candidate) => candidate.text)
+    .sort((left, right) => left.index - right.index)
+    .map((candidate) => {
+      const base = slugify(candidate.text) || "section";
+      const count = seen.get(base) ?? 0;
+      seen.set(base, count + 1);
+      return {
+        depth: candidate.depth,
+        text: candidate.text,
+        id: count === 0 ? base : `${base}-${count + 1}`,
+      };
+    });
 }
 
 function list(value: unknown): string[] {
