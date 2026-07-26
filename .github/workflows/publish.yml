@@ -4,6 +4,11 @@ on:
   release:
     types:
       - published
+  push:
+    branches:
+      - main
+    paths:
+      - packages/mira-docs/package.json
 
 permissions:
   contents: read
@@ -30,12 +35,14 @@ jobs:
       - name: Verify release package
         run: npm run release:check
 
-      - name: Match release tag and package version
+      - name: Resolve package version
         id: package
         shell: bash
         run: |
           VERSION=$(node -p "require('./packages/mira-docs/package.json').version")
-          test "${GITHUB_REF_NAME}" = "v${VERSION}"
+          if [ "${GITHUB_EVENT_NAME}" = "release" ]; then
+            test "${GITHUB_REF_NAME}" = "v${VERSION}"
+          fi
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Check whether this version already exists
