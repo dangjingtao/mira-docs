@@ -12,6 +12,8 @@ export {
   slugify,
   sourcePathToRoute,
 } from "./content";
+export { renderMiraMarkdown } from "./markdown";
+export type { MiraMarkdownRenderOptions } from "./markdown";
 export type {
   MiraDoc,
   MiraDocsAppProps,
