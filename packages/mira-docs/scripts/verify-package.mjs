@@ -1,9 +1,13 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const packageManifest = JSON.parse(
+  readFileSync(resolve(packageRoot, "package.json"), "utf8"),
+);
 const isWindows = process.platform === "win32";
 const npmCommand = isWindows ? "npm.cmd" : "npm";
 const result = spawnSync(
@@ -45,8 +49,8 @@ try {
 
 const report = reports.at(-1);
 assert.ok(report, "npm pack returned no package report");
-assert.equal(report.name, "@uichat-mira/docs");
-assert.equal(report.version, "0.1.0");
+assert.equal(report.name, packageManifest.name);
+assert.equal(report.version, packageManifest.version);
 
 const files = new Set(report.files.map((file) => file.path));
 const required = [
