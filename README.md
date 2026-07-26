@@ -1,40 +1,58 @@
 # MiraDocs
 
-MiraDocs is a Git-native documentation, publishing, and project portal runtime.
+MiraDocs is a Git-native documentation, publishing, and project portal runtime for Vite and React.
 
-It turns Markdown in a repository into a public site, keeps GitHub Pages as a
-first-class deployment target, and exposes a stable content contract that the
-Mira Skill can operate without editing UI implementation files.
+It turns structured Markdown in a repository into navigable content, a virtual Vite manifest, and static deployment artifacts while allowing each consumer to keep its own visual identity. Content stays reviewable through Git, site behavior stays configurable, and automation can operate stable contracts instead of editing UI implementation files.
 
-## Current scope
+## Current status
 
-- Vite + React runtime
-- Markdown and frontmatter content model
-- Generated routes and navigation
-- Configurable static HTML generation for GitHub Pages
+- Public npm package: `@uichat-mira/docs@0.1.0`
+- GitHub release: `v0.1.0`
+- Publishing protected by npm Trusted Publishing and GitHub OIDC
+- `uichat-mira-docs` is the first production consumer and compatibility benchmark
+- The production consumer installs MiraDocs from npm rather than a Git commit
+
+```bash
+npm install @uichat-mira/docs
+```
+
+## What MiraDocs provides
+
+- Markdown and YAML Frontmatter content model
+- Compatibility fallback for existing loose Frontmatter content
+- Documentation, article, project, and page entry types
+- Vite content discovery and `virtual:mira-docs/content`
+- Generated routes, navigation roots, and heading extraction
+- Configurable static HTML generation
 - Canonical, Open Graph, Twitter, and JSON-LD metadata
 - `404.html`, `sitemap.xml`, and `robots.txt`
-- Documentation, blog, and project entry types
-- Official site built with MiraDocs itself
-- Backup location for the UIChat Mira skill contract
+- GitHub Pages project-path and root-path support
+- A lightweight React runtime that consumers may use or replace
+
+## Boundaries
+
+MiraDocs is not a hosted CMS, a GitHub API wrapper, or a mandatory site theme. It owns the content and static-build contracts; consumer applications own their branding, page composition, and product-specific behavior.
+
+The canonical MiraDocs Skill lives in UIChat Mira. It operates repository content, configuration, branches, pull requests, and publishing workflows through stable GitHub capabilities. The `skill-backup` directory in this repository is a read-only reference copy.
+
+## Package exports
+
+- `@uichat-mira/docs` — content model, configuration helpers, and React runtime
+- `@uichat-mira/docs/vite` — Markdown discovery, virtual manifests, and static output
+- `@uichat-mira/docs/styles.css` — default lightweight styles
 
 ## Development
 
 ```bash
-npm install
+npm ci
 npm run validate
 npm run dev
 ```
 
-The official site is built from `apps/site`. The reusable package lives at
-`packages/mira-docs`.
-
-The static build extension contract is documented in
-[`docs/static-build.md`](docs/static-build.md).
+The official self-hosted site lives in `apps/site`. The reusable package lives in `packages/mira-docs`. Static build extension points are documented in [`docs/static-build.md`](docs/static-build.md).
 
 ## Repository roles
 
-- **UIChat Mira** is the canonical host of the MiraDocs Skill.
-- **This repository** contains the runtime, schemas, starter contract, official
-  site, and a read-only backup of the skill instructions.
-- **uichat-mira-docs** is the first production consumer and migration benchmark.
+- **uichat-mira** — canonical MiraDocs Skill host and execution entry
+- **mira-docs** — runtime, schemas, package, official site, and release pipeline
+- **uichat-mira-docs** — first production consumer and migration benchmark
