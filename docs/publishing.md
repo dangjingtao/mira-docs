@@ -38,18 +38,31 @@ The workflow must use a GitHub-hosted runner, Node 22.14 or newer, npm 11.5.1 or
 
 Do not create or store an npm automation token unless trusted publishing cannot be used.
 
-## Repository ownership migration
+## Folio package cutover
 
-The current publishing identity is tied to `dangjingtao/mira-docs`. The repository is planned to move to `uichat-mira/mira-docs` before further roadmap releases.
+The current package identity is `@uichat-mira/docs`, published from `dangjingtao/mira-docs`.
 
-Treat the repository transfer and npm Trusted Publisher change as one cutover:
+The planned canonical identity is:
 
-1. transfer the GitHub repository first;
-2. verify repository history, workflows, releases, tags, secrets, and integrations;
-3. update `packages/mira-docs/package.json` so its repository URL exactly matches `uichat-mira/mira-docs`;
-4. replace the npm Trusted Publisher repository identity with `uichat-mira/mira-docs` + `publish.yml` and allow the direct `npm publish` action used by the workflow;
-5. verify the first real post-transfer release publishes through OIDC before declaring migration complete.
+```text
+GitHub: uichat-mira/folio
+npm:    @uichat-mira/folio
+```
 
-Do not point `package.json` at the organization repository before the GitHub transfer has actually completed. Do not remove the old trust relationship before the organization-side publishing configuration is ready.
+Treat this as a new-repository and new-package bootstrap rather than an in-place repository transfer.
 
-npm does not fully validate a Trusted Publisher configuration when it is saved; the first real publish is the decisive end-to-end check. Keep the last known-good source tag/commit and published npm version as rollback anchors.
+### Migration sequence
+
+1. create `uichat-mira/folio` and preserve the full source history from the legacy repository;
+2. update the new repository's project/package identity and metadata to Folio;
+3. configure npm Trusted Publishing for `uichat-mira/folio` + `publish.yml`;
+4. run `npm ci` and `npm run release:check`;
+5. publish `@uichat-mira/folio@0.1.1` as a behavior-parity release;
+6. migrate at least one real consumer from `@uichat-mira/docs@0.1.1` to `@uichat-mira/folio@0.1.1`;
+7. only after parity is verified, archive `dangjingtao/mira-docs` and deprecate the legacy npm package with a migration message.
+
+Do not unpublish `@uichat-mira/docs`. Existing consumers must continue to resolve it while migration proceeds.
+
+The first Folio publish is the decisive end-to-end validation of the new Trusted Publisher identity. A saved npm configuration alone is not sufficient evidence that OIDC publishing works.
+
+The obsolete `dangjingtao.github.io/mira-docs/` Pages surface is not part of the migration target.
