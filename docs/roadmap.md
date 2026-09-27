@@ -28,6 +28,86 @@ Real consumers have exposed the next reusable gaps, especially around content-ti
 5. **Backward-compatible migration first.** New shared contracts should allow current consumers to adopt them incrementally and delete compatibility code only after equivalent output is verified.
 6. **Verification is part of the feature.** A release is not complete when an API exists; it is complete when package tests and at least one real consumer prove the intended static output.
 
+## Phase 0 — repository ownership and npm publisher migration
+
+### Objective
+
+Move the repository from `dangjingtao/mira-docs` to `uichat-mira/mira-docs` without losing the ability to publish `@uichat-mira/docs`.
+
+This migration is a prerequisite for new package releases in this roadmap. The package should not accumulate more release automation around the personal repository identity and then migrate later.
+
+### Why this is coupled to npm publishing
+
+The current `.github/workflows/publish.yml` publishes through npm Trusted Publishing (OIDC). The trust relationship is bound to the GitHub repository identity and workflow filename, and npm also expects the package `repository.url` to match the GitHub repository used for publishing.
+
+Therefore the GitHub transfer and npm publisher cutover are one migration unit.
+
+### Preflight
+
+Before transfer, record and verify:
+
+- current default branch and active branches;
+- tags and GitHub releases;
+- recent Actions runs;
+- repository / environment secrets and variables;
+- current Trusted Publisher settings for `@uichat-mira/docs`;
+- `.github/workflows/publish.yml`;
+- hard-coded `dangjingtao/mira-docs` references;
+- current package metadata in `packages/mira-docs/package.json`;
+- current official-site GitHub URL / Pages assumptions.
+
+Known owner-bound references currently include:
+
+- `packages/mira-docs/package.json` repository and bugs URLs;
+- `docs/publishing.md` Trusted Publisher instructions;
+- `apps/site/mira-docs.config.ts` GitHub URL;
+- GitHub Pages / homepage values that should be reviewed separately from the repository URL.
+
+Do not change the package `repository.url` to the organization location before the repository itself has transferred, because the current Trusted Publisher still publishes from the personal repository.
+
+### Transfer checkpoint
+
+Transfer the repository to:
+
+```text
+uichat-mira/mira-docs
+```
+
+Immediately verify that repository history, branches, tags, releases, workflows, Actions history, webhooks, secrets, and deploy keys remain available as expected. GitHub redirects from the previous repository URL should be treated as compatibility only, not as the new source of truth.
+
+### Publisher cutover
+
+After the repository transfer:
+
+1. update `packages/mira-docs/package.json` repository / bugs metadata to `uichat-mira/mira-docs`;
+2. update repository-owned documentation and official-site links that still identify `dangjingtao/mira-docs`;
+3. configure npm Trusted Publishing for:
+   - GitHub owner: `uichat-mira`;
+   - repository: `mira-docs`;
+   - workflow filename: `publish.yml`;
+   - allowed action: direct `npm publish`, matching the existing workflow;
+4. remove the obsolete personal-repository trust relationship when the new configuration is in place;
+5. run the normal release gate before the first post-transfer publish.
+
+npm currently validates the trusted-publisher identity only when a real publish is attempted, so configuration alone is not sufficient evidence that publishing still works.
+
+### First post-transfer release
+
+The first real package release after transfer is also the final publisher-migration smoke test.
+
+If Phase 1 is ready, `0.1.2` may serve as that first release. Do not claim the npm publisher migration fully accepted until the package has actually published from `uichat-mira/mira-docs` through OIDC and the published package metadata / provenance points at the organization repository.
+
+### Exit criteria
+
+Phase 0 is complete when:
+
+- the canonical repository is `uichat-mira/mira-docs`;
+- GitHub transfer integrity has been verified;
+- owner-bound repository/package metadata points at the organization repository;
+- npm Trusted Publishing is configured for the organization repository and `publish.yml`;
+- the first post-transfer package version is published successfully through GitHub Actions OIDC;
+- the last known-good pre-transfer commit/tag and published package version remain recorded as rollback anchors.
+
 ## Phase 1 — 0.1.2: content-time and SEO metadata contract
 
 ### Objective
@@ -202,7 +282,7 @@ The following remain consumer or Skill responsibilities unless a future contract
 
 ## Release and migration discipline
 
-For every roadmap release:
+For every roadmap release after Phase 0:
 
 1. implement the smallest coherent package contract;
 2. add package-level regression tests;
@@ -221,6 +301,10 @@ For every roadmap release:
 A package release must not be treated as complete solely because npm publishing succeeded.
 
 ## Version intent
+
+### Phase 0
+
+Repository ownership and npm Trusted Publisher migration. This is an operational prerequisite, not a package feature version.
 
 ### 0.1.2
 
