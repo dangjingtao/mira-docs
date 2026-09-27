@@ -1,12 +1,14 @@
-# MiraDocs upgrade roadmap
+# Folio migration and upgrade roadmap
 
 This roadmap turns capabilities proven in real consumers into a smaller, more reliable shared publishing contract.
 
-The goal is not to make MiraDocs own every concern of a content site. The goal is to move only stable, reusable publishing behavior into `@uichat-mira/docs`, so consumers can delete duplicate compatibility code without losing control of product-specific content rules, branding, authorship, or deployment policy.
+The goal is not to make Folio own every concern of a content site. The goal is to move only stable, reusable publishing behavior into `@uichat-mira/folio`, so consumers can delete duplicate compatibility code without losing control of product-specific content rules, branding, authorship, or deployment policy.
 
 ## Baseline
 
-Current public package: `@uichat-mira/docs@0.1.1`.
+Current legacy package: `@uichat-mira/docs@0.1.1`.
+
+Planned canonical package after Phase 0: `@uichat-mira/folio`.
 
 The current package already owns:
 
@@ -28,85 +30,96 @@ Real consumers have exposed the next reusable gaps, especially around content-ti
 5. **Backward-compatible migration first.** New shared contracts should allow current consumers to adopt them incrementally and delete compatibility code only after equivalent output is verified.
 6. **Verification is part of the feature.** A release is not complete when an API exists; it is complete when package tests and at least one real consumer prove the intended static output.
 
-## Phase 0 — repository ownership and npm publisher migration
+## Phase 0 — Folio bootstrap and package cutover
 
 ### Objective
 
-Move the repository from `dangjingtao/mira-docs` to `uichat-mira/mira-docs` without losing the ability to publish `@uichat-mira/docs`.
-
-This migration is a prerequisite for new package releases in this roadmap. The package should not accumulate more release automation around the personal repository identity and then migrate later.
-
-### Why this is coupled to npm publishing
-
-The current `.github/workflows/publish.yml` publishes through npm Trusted Publishing (OIDC). The trust relationship is bound to the GitHub repository identity and workflow filename, and npm also expects the package `repository.url` to match the GitHub repository used for publishing.
-
-Therefore the GitHub transfer and npm publisher cutover are one migration unit.
-
-### Preflight
-
-Before transfer, record and verify:
-
-- current default branch and active branches;
-- tags and GitHub releases;
-- recent Actions runs;
-- repository / environment secrets and variables;
-- current Trusted Publisher settings for `@uichat-mira/docs`;
-- `.github/workflows/publish.yml`;
-- hard-coded `dangjingtao/mira-docs` references;
-- current package metadata in `packages/mira-docs/package.json`;
-- current official-site GitHub URL / Pages assumptions.
-
-Known owner-bound references currently include:
-
-- `packages/mira-docs/package.json` repository and bugs URLs;
-- `docs/publishing.md` Trusted Publisher instructions;
-- `apps/site/mira-docs.config.ts` GitHub URL;
-- GitHub Pages / homepage values that should be reviewed separately from the repository URL.
-
-Do not change the package `repository.url` to the organization location before the repository itself has transferred, because the current Trusted Publisher still publishes from the personal repository.
-
-### Transfer checkpoint
-
-Transfer the repository to:
+Create a new canonical home instead of transferring the legacy repository in place:
 
 ```text
-uichat-mira/mira-docs
+GitHub: uichat-mira/folio
+npm:    @uichat-mira/folio
 ```
 
-Immediately verify that repository history, branches, tags, releases, workflows, Actions history, webhooks, secrets, and deploy keys remain available as expected. GitHub redirects from the previous repository URL should be treated as compatibility only, not as the new source of truth.
+The existing `dangjingtao/mira-docs` repository remains as the migration source and rollback anchor until Folio is proven. The old GitHub Pages URL is already non-functional and is not a migration target.
 
-### Publisher cutover
+### Why a new repository
 
-After the repository transfer:
+This change intentionally separates three concerns that have become coupled in the legacy repository:
 
-1. update `packages/mira-docs/package.json` repository / bugs metadata to `uichat-mira/mira-docs`;
-2. update repository-owned documentation and official-site links that still identify `dangjingtao/mira-docs`;
-3. configure npm Trusted Publishing for:
-   - GitHub owner: `uichat-mira`;
-   - repository: `mira-docs`;
-   - workflow filename: `publish.yml`;
-   - allowed action: direct `npm publish`, matching the existing workflow;
-4. remove the obsolete personal-repository trust relationship when the new configuration is in place;
-5. run the normal release gate before the first post-transfer publish.
+- the project brand (`MiraDocs`);
+- the personal GitHub repository identity (`dangjingtao/mira-docs`);
+- the legacy npm package name (`@uichat-mira/docs`).
 
-npm currently validates the trusted-publisher identity only when a real publish is attempted, so configuration alone is not sufficient evidence that publishing still works.
+The new repository establishes one consistent identity for the shared publishing runtime without inheriting the broken GitHub Pages surface or the old Mira-branded repository name.
 
-### First post-transfer release
+### Bootstrap
 
-The first real package release after transfer is also the final publisher-migration smoke test.
+Create `uichat-mira/folio` and seed it with the full Git history from `dangjingtao/mira-docs` so source history remains inspectable.
 
-If Phase 1 is ready, `0.1.2` may serve as that first release. Do not claim the npm publisher migration fully accepted until the package has actually published from `uichat-mira/mira-docs` through OIDC and the published package metadata / provenance points at the organization repository.
+Before any package publish:
+
+- verify the imported commit history and tags;
+- verify package tests and `npm run release:check`;
+- replace project naming and repository metadata with Folio;
+- remove or disable GitHub Pages behavior that exists only for the obsolete personal-site URL;
+- update repository-owned documentation and links to the new canonical repository;
+- configure npm Trusted Publishing for `uichat-mira/folio` + `publish.yml`.
+
+The legacy repository should remain writable only for migration fixes until the Folio cutover is accepted, then be archived with a clear migration notice. Do not delete it.
+
+### Package naming and compatibility
+
+Folio's canonical package is:
+
+```text
+@uichat-mira/folio
+```
+
+The existing `@uichat-mira/docs` package remains published so existing installations do not break.
+
+Do not unpublish the legacy package. After Folio is proven by at least one real consumer, deprecate `@uichat-mira/docs` with a migration message that points to `@uichat-mira/folio`.
+
+### Parity release
+
+The first Folio release should prove the rename and publisher migration without mixing in a new runtime feature.
+
+Publish:
+
+```text
+@uichat-mira/folio@0.1.1
+```
+
+as a behavior-parity release of the current `@uichat-mira/docs@0.1.1` contract, with only the project/package identity and repository metadata changed as required.
+
+Then migrate one real consumer from:
+
+```text
+@uichat-mira/docs@0.1.1
+```
+
+to:
+
+```text
+@uichat-mira/folio@0.1.1
+```
+
+and verify package imports, build output, static output, and runtime behavior before starting Phase 1.
+
+This keeps repository/package migration independent from the content-time feature planned for 0.1.2.
 
 ### Exit criteria
 
 Phase 0 is complete when:
 
-- the canonical repository is `uichat-mira/mira-docs`;
-- GitHub transfer integrity has been verified;
-- owner-bound repository/package metadata points at the organization repository;
-- npm Trusted Publishing is configured for the organization repository and `publish.yml`;
-- the first post-transfer package version is published successfully through GitHub Actions OIDC;
-- the last known-good pre-transfer commit/tag and published package version remain recorded as rollback anchors.
+- `uichat-mira/folio` is the canonical repository;
+- full Git history has been preserved in the new repository;
+- `@uichat-mira/folio@0.1.1` has published successfully through GitHub Actions OIDC;
+- package metadata and provenance point at `uichat-mira/folio`;
+- at least one real consumer has migrated to the Folio package with equivalent behavior;
+- the obsolete GitHub Pages surface is no longer treated as a supported deployment target;
+- `dangjingtao/mira-docs` is archived with a migration notice;
+- `@uichat-mira/docs` remains available but is marked for compatibility-only use.
 
 ## Phase 1 — 0.1.2: content-time and SEO metadata contract
 
@@ -116,7 +129,7 @@ Make publication and modification time a first-class static publishing contract 
 
 ### Package scope
 
-MiraDocs should support resolved publication metadata for static routes:
+Folio should support resolved publication metadata for static routes:
 
 - publication time;
 - modification time;
@@ -126,7 +139,7 @@ MiraDocs should support resolved publication metadata for static routes:
 
 The exact public API may be route fields or a route metadata object, but it must preserve this boundary:
 
-> Consumers determine the factual time. MiraDocs serializes it consistently into static SEO output.
+> Consumers determine the factual time. Folio serializes it consistently into static SEO output.
 
 ### Compatibility requirements
 
@@ -172,13 +185,13 @@ For `tomz-io`, the intended end state is:
 
 ### Objective
 
-Turn MiraDocs from a generator that can emit correct static output into a runtime that can also verify the generic invariants it owns.
+Turn Folio from a generator that can emit correct static output into a runtime that can also verify the generic invariants it owns.
 
 ### Package scope
 
 Introduce a reusable static-output verifier, exposed as a library contract first. A CLI may be added later only if multiple consumers need it.
 
-The verifier should distinguish **errors** from **warnings** and initially focus on invariants MiraDocs can judge without knowing product semantics.
+The verifier should distinguish **errors** from **warnings** and initially focus on invariants Folio can judge without knowing product semantics.
 
 Candidate error checks:
 
@@ -210,7 +223,7 @@ A consumer remains responsible for checks such as:
 - historical URL ownership;
 - product-specific redirects;
 - content-time provenance;
-- site-specific duplicate-content policy beyond MiraDocs route ownership.
+- site-specific duplicate-content policy beyond Folio route ownership.
 
 ### Exit criteria
 
@@ -239,9 +252,9 @@ Provide small composable helpers or typed builders for common schema structures 
 
 ### Boundary
 
-MiraDocs may provide schema structure, escaping, URL resolution, and serialization.
+Folio may provide schema structure, escaping, URL resolution, and serialization.
 
-MiraDocs must not decide:
+Folio must not decide:
 
 - who the author is;
 - whether a reviewer is a co-author;
@@ -266,7 +279,7 @@ These capabilities are intentionally deferred until repeated real-world demand p
 
 Do not add these merely because they are convenient for one site.
 
-## Explicitly out of scope for MiraDocs
+## Explicitly out of scope for Folio
 
 The following remain consumer or Skill responsibilities unless a future contract is separately justified:
 
@@ -304,7 +317,7 @@ A package release must not be treated as complete solely because npm publishing 
 
 ### Phase 0
 
-Repository ownership and npm Trusted Publisher migration. This is an operational prerequisite, not a package feature version.
+Bootstrap `uichat-mira/folio`, publish the parity package `@uichat-mira/folio@0.1.1`, migrate one real consumer, then archive the legacy repository. This is an operational prerequisite, not a new runtime feature.
 
 ### 0.1.2
 
@@ -322,6 +335,6 @@ A later version should be chosen from implemented contract changes rather than f
 
 ## Success condition
 
-This roadmap succeeds when consumers become smaller as MiraDocs becomes more capable.
+This roadmap succeeds when consumers become smaller as Folio becomes more capable.
 
 A healthy upgrade should leave fewer duplicate renderers, SEO post-processors, static-output checks, and compatibility shims in consumer repositories while preserving their ownership of product-specific content semantics.
