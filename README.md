@@ -6,8 +6,8 @@ It turns structured Markdown in a repository into navigable content, a virtual V
 
 ## Current status
 
-- Public npm package: `@uichat-mira/docs@0.1.0`
-- GitHub release: `v0.1.0`
+- Public npm package: `@uichat-mira/docs@0.1.1`
+- Latest GitHub release: `v0.1.0`
 - Publishing protected by npm Trusted Publishing and GitHub OIDC
 - `uichat-mira-docs` is the first production consumer and compatibility benchmark
 - The production consumer installs MiraDocs from npm rather than a Git commit
@@ -50,6 +50,10 @@ npm run dev
 ```
 
 The official self-hosted site lives in `apps/site`. The reusable package lives in `packages/mira-docs`. Static build extension points are documented in [`docs/static-build.md`](docs/static-build.md).
+
+## Roadmap
+
+The upgrade path for promoting proven consumer behavior into the shared package is documented in [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Repository roles
 
